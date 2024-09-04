@@ -1,9 +1,3 @@
-# A mafia Flet app
+# A MAFIA Flet app
 
-An example of a minimal Flet app.
-
-To run the app:
-
-```
-flet run [app_directory]
-```
+v1.0.0 - first commit 
