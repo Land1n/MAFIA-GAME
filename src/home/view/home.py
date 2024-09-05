@@ -4,6 +4,10 @@ class HomeView(ft.View):
     class PlayerCard(ft.Draggable):
         def __init__(self,pos:int,name:str,cls:str,color:str):
             self.player_data = {"pos":pos,"name":name,"cls":cls,"color":color}
+            self.ref_title = ft.Ref[ft.Text]()
+            self.ref_subtitle = ft.Ref[ft.Text]()
+            self.ref_title_f = ft.Ref[ft.Text]()
+            self.ref_subtitle_f = ft.Ref[ft.Text]()
             super().__init__(
                 group = "",
                 content=ft.DragTarget(
@@ -17,15 +21,21 @@ class HomeView(ft.View):
                                     size=15,
                                 ),
                                 title=ft.Text(
+                                    ref=self.ref_title,
                                     value=self.player_data["name"],
                                     color=self.player_data["color"]
                                 ),
                                 subtitle=ft.Text(
+                                    ref=self.ref_subtitle,
                                     value=self.player_data["cls"],
                                     color=self.player_data["color"]
                                 ),
                                 trailing=ft.PopupMenuButton(
                                     items=[
+                                        ft.PopupMenuItem(
+                                            text="Убить человека",
+                                            on_click=self.kill_player
+                                        ),
                                         ft.PopupMenuItem(
                                             text="Удалить человек",
                                             on_click=self.remove_player
@@ -50,63 +60,93 @@ class HomeView(ft.View):
                                 size=15,
                             ),
                             title=ft.Text(
+                                ref=self.ref_title_f,
                                 value=self.player_data["name"],
-                                color=self.player_data["color"],
+                                color=self.player_data["color"]
                             ),
                             subtitle=ft.Text(
+                                ref=self.ref_subtitle_f,
                                 value=self.player_data["cls"],
-                                color=self.player_data["color"],
+                                color=self.player_data["color"]
                             ),
                             trailing=ft.PopupMenuButton()
                         )
                     )
                 )
             )
+        def change_drag(self,data:dict = {},e:ft.ControlEvent=None):
+            if data:
+                self.player_data = data
+                
+                self.ref_title.current.value = self.player_data["name"]
+                self.ref_title.current.color = self.player_data["color"]
+                
+                self.ref_subtitle.current.value = self.player_data["cls"]   
+                self.ref_subtitle.current.color = self.player_data["color"]
+                
+                self.ref_title_f.current.value = self.player_data["name"]
+                self.ref_title_f.current.color = self.player_data["color"]
+
+                self.ref_subtitle_f.current.value = self.player_data["cls"]
+                self.ref_subtitle_f.current.color = self.player_data["color"]
+                
 
 
+            self.ref_title.current.update()
+            self.ref_subtitle.current.update()       
+            self.ref_title_f.current.update()
+            self.ref_subtitle_f.current.update()     
+            self.update()            
+
+        def kill_player(self,e:ft.ControlEvent=None):
+            print('qwe')
+            self.ref_title.current.style = ft.TextStyle(
+                        decoration=ft.TextDecoration.LINE_THROUGH,
+                        decoration_thickness=3,
+                    ),
+            self.ref_subtitle.style = ft.TextStyle(
+                        decoration=ft.TextDecoration.LINE_THROUGH,
+                        decoration_thickness=3,
+                    ),
+            self.ref_title_f.current.style = ft.TextStyle(
+                        decoration=ft.TextDecoration.LINE_THROUGH,
+                        decoration_thickness=3,
+                    ),
+            self.ref_subtitle_f.current.style = ft.TextStyle(
+                        decoration=ft.TextDecoration.LINE_THROUGH,
+                        decoration_thickness=3,
+                    ),
+            self.ref_title.current.update()
+            self.ref_subtitle.current.update()       
+            self.ref_title_f.current.update()
+            self.ref_subtitle_f.current.update()     
+            self.update()    
         def drag_accept(self,e: ft.DragTargetAcceptEvent):
-            # def change_drag(obj,data):
-            #     pos,name,cls,color = data
-
-            #     obj.title.value = name
-            #     obj.title.color = color
-            #     obj.subtitle.value = cls 
-            #     obj.subtitle.color = color 
-            #     obj.update()
             src = e.control.page.get_control(e.src_id)
             data_1 = src.player_data
-            data_2 = e.control.content.data
-            src.player_data = data_2
-            print(data_1,data_2)
-            # item_1 = src.content.content.content.content
-            # item_2 = e.control.content.content.content
-            # item_1_f = src.content_feedback.content.content
-            # item_2_f = e.concontent_feedback.content.content
-            # print(item_2_f)
-            # change_drag(src,data_2)
-            # change_drag(e,data_1)
+            data_2 = e.control.parent.player_data
 
-            # change_drag(item_1_f,data_2)
-            # change_drag(item_2_f,data_1)
+            src.change_drag(data_2)
+            e.control.parent.change_drag(data_1)
 
         def remove_player(self,e:ft.ControlEvent):
             ...
-        def change_status(self,e:ft.ControlEvent):
-            def change_text(text_obj,status=True):
-                if status:
-                    text_obj.style = None
-                    text_obj.update()
-                else:
-                    text_obj.style = ft.TextStyle(
-                        decoration=ft.TextDecoration.LINE_THROUGH,
-                        decoration_thickness=3,
-                    )
-                    text_obj.update()
-            self.status = False if self.status else True
-            if self.status:
-                change_text(self.pos_ref)
-                change_text(self.name_ref)                
-                change_text(self.subtitle_ref)
+        # def change_status(self,e:ft.ControlEvent):
+        #     def change_text(text_obj,status=True):
+        #         if status:
+        #             text_obj.style = None
+        #             text_obj.update()
+        #         else:
+        #             text_obj.style = ft.TextStyle(
+        #                 decoration=ft.TextDecoration.LINE_THROUGH,
+        #                 decoration_thickness=3,
+        #             )
+        #             text_obj.update()
+        #     self.status = False if self.status else True
+        #     if self.status:
+        #         change_text(self.pos_ref)
+        #         change_text(self.name_ref)                
+        #         change_text(self.subtitle_ref)
     def __init__(self,page:ft.Page):
         super().__init__()
         self.route = "/home"
