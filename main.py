@@ -1,7 +1,9 @@
 import flet as ft
 
 from src.router import Router
-from src.database import DataBase
+
+from src.utils import on_keyboard
+
 
 def main(page:ft.Page):
     page.title = 'ZAL'
@@ -9,6 +11,8 @@ def main(page:ft.Page):
     page.fonts = {
         "Dimkin Regular": "fonts/Dimkin Regular.ttf",
     }
+    # page.client_storage.clear()
+    page.on_keyboard_event = on_keyboard
     page.on_route_change = router.route_change
     page.views.clear()
     page.go("/home") 
